@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0mal788" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.8.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.1.0">
+  <bpmn:process id="process1" name="process1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_164hq0j</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="SendMailToProjectLead" name="Send Mail To Project Lead">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="sendMailToProjectLead" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_164hq0j</bpmn:incoming>
+      <bpmn:outgoing>Flow_01ulpxl</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_164hq0j" sourceRef="StartEvent_1" targetRef="SendMailToProjectLead" />
+    <bpmn:userTask id="Activity_1hgxdw1" name="Project Lead: Retire Project?">
+      <bpmn:incoming>Flow_01ulpxl</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rgb66s</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_01ulpxl" sourceRef="SendMailToProjectLead" targetRef="Activity_1hgxdw1" />
+    <bpmn:boundaryEvent id="Event_1a7qyr5" attachedToRef="Activity_1hgxdw1">
+      <bpmn:outgoing>Flow_0n19ezu</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0a1ubp9">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">=projectLeadTimeout</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Event_19i0z17">
+      <bpmn:incoming>Flow_1xknkwj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_1d5fjpm" name="Postpone retirement">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="postponeRetirement" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0mqlfxe</bpmn:incoming>
+      <bpmn:incoming>Flow_0n19ezu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xknkwj</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1xknkwj" sourceRef="Activity_1d5fjpm" targetRef="Event_19i0z17" />
+    <bpmn:exclusiveGateway id="Gateway_1gjby3n">
+      <bpmn:incoming>Flow_1rgb66s</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mqlfxe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0fw5y7h</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1rgb66s" sourceRef="Activity_1hgxdw1" targetRef="Gateway_1gjby3n" />
+    <bpmn:sequenceFlow id="Flow_0mqlfxe" sourceRef="Gateway_1gjby3n" targetRef="Activity_1d5fjpm">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=retire != true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0n19ezu" sourceRef="Event_1a7qyr5" targetRef="Activity_1d5fjpm" />
+    <bpmn:serviceTask id="Activity_0v9wp07" name="Retire">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="retire" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0fw5y7h</bpmn:incoming>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0fw5y7h" sourceRef="Gateway_1gjby3n" targetRef="Activity_0v9wp07">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=retire = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="219" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1g9fhrh_di" bpmnElement="SendMailToProjectLead">
+        <dc:Bounds x="260" y="197" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1hgxdw1_di" bpmnElement="Activity_1hgxdw1">
+        <dc:Bounds x="410" y="197" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1gjby3n_di" bpmnElement="Gateway_1gjby3n" isMarkerVisible="true">
+        <dc:Bounds x="575" y="212" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1d5fjpm_di" bpmnElement="Activity_1d5fjpm">
+        <dc:Bounds x="550" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19i0z17_di" bpmnElement="Event_19i0z17">
+        <dc:Bounds x="462" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1k90qlj" bpmnElement="Activity_0v9wp07">
+        <dc:Bounds x="550" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1a7qyr5_di" bpmnElement="Event_1a7qyr5">
+        <dc:Bounds x="492" y="179" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="180" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_164hq0j_di" bpmnElement="Flow_164hq0j">
+        <di:waypoint x="215" y="237" />
+        <di:waypoint x="260" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01ulpxl_di" bpmnElement="Flow_01ulpxl">
+        <di:waypoint x="360" y="237" />
+        <di:waypoint x="410" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rgb66s_di" bpmnElement="Flow_1rgb66s">
+        <di:waypoint x="510" y="237" />
+        <di:waypoint x="575" y="237" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mqlfxe_di" bpmnElement="Flow_0mqlfxe">
+        <di:waypoint x="600" y="212" />
+        <di:waypoint x="600" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fw5y7h_di" bpmnElement="Flow_0fw5y7h">
+        <di:waypoint x="600" y="262" />
+        <di:waypoint x="600" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n19ezu_di" bpmnElement="Flow_0n19ezu">
+        <di:waypoint x="510" y="179" />
+        <di:waypoint x="510" y="140" />
+        <di:waypoint x="550" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xknkwj_di" bpmnElement="Flow_1xknkwj">
+        <di:waypoint x="550" y="100" />
+        <di:waypoint x="498" y="100" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
